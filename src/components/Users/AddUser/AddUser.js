@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 // Components
 import Card from "../../UI/Card/Card";
@@ -12,17 +12,18 @@ import classes from "./AddUser.module.css";
 import Wrapper from "../../Helpers/Wrapper";
 
 const AddUser = (props) => {
-  //
-  // useState hooks
-  const [enteredUsername, setEnteredUsername] = useState("");
-  const [enteredAge, setEnteredAge] = useState("");
+  // useRef Hooks
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
 
   // initial value undefined => no need to pass any other initial value here
   const [error, setError] = useState();
 
   const addUserHandler = (event) => {
     event.preventDefault();
-    if (enteredUsername.trim().length === 0 || enteredAge.trim().length === 0) {
+    const enteredName = nameInputRef.current.value;
+    const enteredUserAge = ageInputRef.current.value;
+    if (enteredName.trim().length === 0 || enteredUserAge.trim().length === 0) {
       setError({
         title: "Invalid input",
         message: "Please enter a valid name and age (non-empty values).",
@@ -30,25 +31,19 @@ const AddUser = (props) => {
       return;
     }
     // making sure enteredAge is a number with +enteredAge (not needed here as the input field type is already set as 'number', but good to know)
-    if (+enteredAge < 1) {
+    if (+enteredUserAge < 1) {
       setError({
         title: "Invalid age",
         message: "Please enter a valid age (>0).",
       });
       return;
     }
-    // lifitng state up to App.js as it has the UsersList component that I want to add the enteredUsername and enteredAge to as a new user
-    props.onAddUser(enteredUsername, enteredAge);
-    setEnteredUsername("");
-    setEnteredAge("");
-  };
+    // lifting state up to App.js as it has the UsersList component that I want to add the enteredUsername and enteredAge to as a new user
+    props.onAddUser(enteredName, enteredUserAge);
 
-  const usernameChangeHandler = (event) => {
-    setEnteredUsername(event.target.value);
-  };
-
-  const ageChangeHandler = (event) => {
-    setEnteredAge(event.target.value);
+    // Not a recommended approach to use useRef to manipulate the DOM, just showing an alternative approach to useState
+    nameInputRef.current.value = "";
+    ageInputRef.current.value = "";
   };
 
   const errorHandler = () => {
@@ -67,19 +62,11 @@ const AddUser = (props) => {
       <Card className={classes.input}>
         <form onSubmit={addUserHandler}>
           <label htmlFor='username'>Username</label>
-          <input
-            id='username'
-            type='text'
-            value={enteredUsername}
-            onChange={usernameChangeHandler}
-          />
+          {/* uncontrolled component by React, only fetched by react. Then using regular DOM api to set the input in a DOM node (internal state not controlled by React) */}
+          <input id='username' type='text' ref={nameInputRef} />
           <label htmlFor='age'>Age (years)</label>
-          <input
-            id='age'
-            type='number'
-            value={enteredAge}
-            onChange={ageChangeHandler}
-          />
+          {/* uncontrolled component by React, only fetched by react. Then using regular DOM api to set the input in a DOM node (internal state not controlled by React) */}
+          <input id='age' type='number' ref={ageInputRef} />
           <Button type='submit'>Add User</Button>
         </form>
       </Card>
