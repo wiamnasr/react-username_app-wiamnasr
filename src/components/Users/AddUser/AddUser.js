@@ -8,6 +8,9 @@ import ErrorModal from "../../UI/ErrorModal/ErrorModal";
 // Style
 import classes from "./AddUser.module.css";
 
+// Helpers
+import Wrapper from "../../Helpers/Wrapper";
+
 const AddUser = (props) => {
   //
   // useState hooks
@@ -53,7 +56,7 @@ const AddUser = (props) => {
   };
 
   return (
-    <div>
+    <Wrapper>
       {error && (
         <ErrorModal
           title={error.title}
@@ -80,7 +83,7 @@ const AddUser = (props) => {
           <Button type='submit'>Add User</Button>
         </form>
       </Card>
-    </div>
+    </Wrapper>
   );
 };
 
